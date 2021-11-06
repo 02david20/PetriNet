@@ -19,7 +19,6 @@ public:
         return p1.name==p2.name;
     }
 };
-
 class Out_Arc{
 private:
     Place p;
@@ -34,7 +33,6 @@ public:
         return p1.p==p2.p;
     }
 };
-
 class In_Arc{
 private:
     Place p;
@@ -52,7 +50,6 @@ public:
         return p1.p==p2.p;
     }
 };
-
 class Transition{
 private:
     vector<In_Arc>in_arcs;
@@ -88,13 +85,11 @@ public:
         return enabled;
     }
 };
-
 class PetriNet{
-private:
-    map<string,int> places;
+    public:
+    vector<Place> ps;
     map<string,Transition> mp;
-public:
-    PetriNet(map<string,Transition> m):mp(m){};
+    PetriNet(map<string,Transition> m,vector<Place>p):mp(m),ps(p){};
     string get_str_seq(vector<string>firing_seq){
         string s="";
         int len = firing_seq.size();
@@ -113,17 +108,29 @@ public:
         }
         cout<<"]\n";
     }
-    void updateMarking(vector<Place>&ps,string transition){
+    void updateMarking(string transition){
         int len = ps.size();
         Transition t = mp.find(transition)->second;
+        //update vector Place
         for(int j=0;j<len;j++){
             vector<In_Arc>::iterator pIn = find(t.in_arcs.begin(),t.in_arcs.end(),ps[j]);
             if(pIn!=t.in_arcs.end()) ps[j]=pIn->p;
             vector<Out_Arc>::iterator pOut = find(t.out_arcs.begin(),t.out_arcs.end(),ps[j]);
             if(pOut!=t.out_arcs.end()) ps[j]=pOut->p;
         }
+        //update other transitions
+        for (std::map<string,Transition>::iterator it=mp.begin(); it!=mp.end(); ++it){
+            if((*it).first!=transition){
+                for(int j=0;j<len;j++){
+                    vector<In_Arc>::iterator pIn = find((*it).second.in_arcs.begin(),(*it).second.in_arcs.end(),ps[j]);
+                    if(pIn!=(*it).second.in_arcs.end()) pIn->p=ps[j];
+                    vector<Out_Arc>::iterator pOut = find((*it).second.out_arcs.begin(),(*it).second.out_arcs.end(),ps[j]);
+                    if(pOut!=(*it).second.out_arcs.end()) pOut->p=ps[j];
+                }
+            }
+        }
     }
-    void run(vector<string>firing_seq, vector<Place>&ps){
+    void run(vector<string>firing_seq){
         string str_seq = get_str_seq(firing_seq);
         int len = firing_seq.size();
         cout<<"Using firing sequence:" << " => "<<str_seq<<'\n';
@@ -135,7 +142,7 @@ public:
             mp.find(firing_seq[i])->second = t;
             if(fire){
                 cout<<firing_seq[i]<<" fire!!"<<endl;
-                updateMarking(ps,firing_seq[i]);
+                updateMarking(firing_seq[i]);
                 printMarking(ps);
             }
             else cout<<firing_seq[i]<<" fizzle!!"<<endl;
