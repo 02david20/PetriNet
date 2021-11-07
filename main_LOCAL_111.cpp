@@ -1,30 +1,25 @@
-#ifndef PETRI_NET
-#define PETRI_NET
 #include <iostream>
 #include <vector>
 #include <map>
 #include <algorithm>
+#include <string>
+#include <chrono>
+#include <thread>
 using namespace std;
 
 class Place{
-private:
+    public:
     string name;
     int token;
-    friend class PetriNet;
-    friend class In_Arc;
-    friend class Out_Arc;
-public:
     Place(string n, int tok=0): name(n),token(tok){};
     friend bool operator==(Place p1,Place p2){
         return p1.name==p2.name;
     }
 };
 class Out_Arc{
-private:
+    public:
     Place p;
     int weight;
-    friend class PetriNet;
-public:
     Out_Arc(Place pl, int w=1): p(pl),weight(w){};
     void trigger(){
         p.token += weight;
@@ -34,11 +29,9 @@ public:
     }
 };
 class In_Arc{
-private:
+    public:
     Place p;
     int weight;
-    friend class PetriNet;
-public:
     In_Arc(Place pl, int w=1): p(pl),weight(w){};
     void trigger(){
         p.token -= weight;
@@ -51,11 +44,9 @@ public:
     }
 };
 class Transition{
-private:
+    public:
     vector<In_Arc>in_arcs;
     vector<Out_Arc>out_arcs;
-    friend class PetriNet;
-public:
     Transition(vector<In_Arc>i,vector<Out_Arc>o){
         in_arcs = i;
         out_arcs = o;
@@ -130,25 +121,73 @@ class PetriNet{
             }
         }
     }
-    void run(vector<string>firing_seq){
-        string str_seq = get_str_seq(firing_seq);
-        int len = firing_seq.size();
-        cout<<"Using firing sequence:" << " => "<<str_seq<<'\n';
-        cout<<"start: ";
-        printMarking(ps);
-        for(int i=0;i<len;i++){
-            Transition t = mp.find(firing_seq[i])->second;
-            bool fire = t.fire();
-            mp.find(firing_seq[i])->second = t;
-            if(fire){
-                cout<<firing_seq[i]<<" fire!!"<<endl;
-                updateMarking(firing_seq[i]);
-                printMarking(ps);
+    void run(vector<string>firing_seq, bool auto_fire){
+        if(!auto_fire){
+            string str_seq = get_str_seq(firing_seq);
+            int len = firing_seq.size();
+            cout<<"Using firing sequence:" << " => "<<str_seq<<'\n';
+            cout<<"start: ";
+            printMarking(ps);
+            for(int i=0;i<len;i++){
+                Transition t = mp.find(firing_seq[i])->second;
+                bool fire = t.fire();
+                mp.find(firing_seq[i])->second = t;
+                if(fire){
+                    cout<<firing_seq[i]<<" fire!!"<<endl;
+                    updateMarking(firing_seq[i]);
+                    printMarking(ps);
+                }
+                else cout<<firing_seq[i]<<" fizzle!!"<<endl;
             }
-            else cout<<firing_seq[i]<<" fizzle!!"<<endl;
+            cout<<"end: ";
+            printMarking(ps);
         }
-        cout<<"end: ";
-        printMarking(ps);
+        else{
+            cout<<"start: ";
+            printMarking(ps);
+            int map_size = mp.size();
+            bool all_failed = false;
+            while(!all_failed){
+                all_failed=true;
+                for(int i=0;i<map_size;i++){
+                    string name = "t"+to_string(i+1);
+                    Transition t = mp.find(name)->second;
+                    bool fire = t.fire();
+                    mp.find(firing_seq[i])->second = t;
+                    if(fire){
+                        cout<<firing_seq[i]<<" fire!!"<<endl;
+                        updateMarking(firing_seq[i]);
+                        printMarking(ps);
+                        all_failed=false;
+                    }
+                }
+                std::this_thread::sleep_for(std::chrono::milliseconds {200});
+            }
+            cout<<"end: ";
+            printMarking(ps);
+        }
     }
 };
-#endif
+int main(){
+    //so luong place
+    int numOfPlaces = 3;
+    //initial marking
+    int initial_marking[] = {5,0,1};
+    vector<Place> ps;
+    for(int i=0;i<numOfPlaces;i++){
+        string name = "P"+to_string(i+1);
+        Place p = Place(name,initial_marking[i]);
+        ps.push_back(p);
+    }
+    // hai transition t1 va t2
+    map<string,Transition> ts;
+    // # liet ke Arc in va out cho moi transition
+    ts.insert(pair<string, Transition>("t1",Transition({In_Arc(ps[0])},{Out_Arc(ps[1])})));
+    ts.insert(pair<string, Transition>("t2",Transition({In_Arc(ps[1])},{Out_Arc(ps[2])})));
+    // firing sequence
+    vector<string> firing_sequence = {"t1", "t2", "t1"};
+    // setting petrinet voi dau vao la ts
+    PetriNet petri_net = PetriNet(ts,ps);
+    bool auto_fire=true;
+    petri_net.run(firing_sequence,auto_fire);
+}
