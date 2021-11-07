@@ -1,5 +1,4 @@
 #include <iostream>
-<<<<<<< HEAD
 #include <vector>
 #include <map>
 #include <algorithm>
@@ -169,12 +168,6 @@ class PetriNet{
         }
     }
 };
-=======
-#include "PetriNet.h"
-using namespace std;
-
-
->>>>>>> c3937f78f6f9168efeff4e28338576e0e1367833
 int main(){
     //so luong place
     int numOfPlaces = 3;
