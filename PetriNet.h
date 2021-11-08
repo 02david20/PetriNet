@@ -18,6 +18,7 @@ public:
     friend bool operator==(Place p1,Place p2){
         return p1.name==p2.name;
     }
+    friend bool compareMarking(vector<Place>, vector<Place>);
 };
 class Out_Arc{
 private:
@@ -86,10 +87,13 @@ public:
     }
 };
 class PetriNet{
-    public:
+public:
+    // Set of place
     vector<Place> ps;
     map<string,Transition> mp;
+public:
     PetriNet(map<string,Transition> m,vector<Place>p):mp(m),ps(p){};
+    
     string get_str_seq(vector<string>firing_seq){
         string s="";
         int len = firing_seq.size();
@@ -99,6 +103,7 @@ class PetriNet{
         }
         return s;
     }
+    
     void printMarking(vector<Place>ps){
         cout<<"[";
         int len = ps.size();
@@ -108,6 +113,7 @@ class PetriNet{
         }
         cout<<"]\n";
     }
+
     void updateMarking(string transition){
         int len = ps.size();
         Transition t = mp.find(transition)->second;
@@ -130,6 +136,7 @@ class PetriNet{
             }
         }
     }
+    
     void run(vector<string>firing_seq){
         string str_seq = get_str_seq(firing_seq);
         int len = firing_seq.size();
@@ -149,6 +156,45 @@ class PetriNet{
         }
         cout<<"end: ";
         printMarking(ps);
+    } 
+    
+    void read_Input();
+    void printReachableMarking(vector< vector<Place> >& M, vector<string> firing_seq) {
+        M.push_back(ps);
+        for (map<string,Transition>::iterator i = mp.begin(); i != mp.end();++i)
+        {
+            if((*i).second.fire()) {
+                updateMarking((*i).first);
+                firing_seq.push_back((*i).first);
+                //Check if the Marking already exist
+                bool alreadyPresent = false;
+                for (auto i : M)
+                {
+                    if(compareMarking(i,this->ps)) {
+                        this->ps = M.back();
+                        alreadyPresent = true;
+                        break;
+                    }
+                }
+                //If not print the Marking
+                if(!alreadyPresent) {
+                    cout << get_str_seq(firing_seq) << endl;
+                    printMarking(this->ps);
+                }
+                printReachableMarking(M,firing_seq);
+                firing_seq.pop_back();
+            }
+        }
+        return;
     }
 };
+
+bool compareMarking(vector<Place> M1, vector<Place> M2) {
+    int len = M1.size();
+    for (int i = 0; i < len; i++)
+    {
+       if(M1[i].token != M2[i].token) return false;
+    }
+    return true;
+}
 #endif
