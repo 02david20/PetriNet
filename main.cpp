@@ -160,8 +160,8 @@ class PetriNet{
                         printMarking(ps);
                         all_failed=false;
                     }
+                    std::this_thread::sleep_for(std::chrono::milliseconds {150});
                 }
-                std::this_thread::sleep_for(std::chrono::milliseconds {200});
             }
             cout<<"end: ";
             printMarking(ps);
