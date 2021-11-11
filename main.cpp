@@ -68,7 +68,7 @@ int main(){
             cout << "---------------" << endl << 
             "Merge Petri Net" << endl;
         }
-        else if(option == "4" || option == "Optional" || option == "Optional"){
+        else if(option == "4" || option == "Optional" || option == "optional"){
             string Input;
             cout << "Enter Input file (Input file must be in the same directory):" << endl; cin >> Input;
             readOptional(Input,p,t);
@@ -97,6 +97,7 @@ int main(){
             string temp = "aa";
             while(temp != ".") {
                 cin >> temp;
+                if(temp == ".") break;
                 bool valid = false;
                 for (auto i:PN->mp)
                 {
@@ -115,13 +116,10 @@ int main(){
         string choice;
         cout << "Do you want to continue?(y/n): ";cin >> choice;
         if(choice != "y" && choice != "Y") {
-            cout << "done";
+            cout << "Done!";
             runningPN = false;
         }
     }
-
-    
-
     delete PN;
     return 0;
 }
