@@ -92,7 +92,7 @@ public:
     vector<Place> ps;
     map<string,Transition> mp;
 public:
-    PetriNet(map<string,Transition> m,vector<Place>p):mp(m),ps(p){};
+    PetriNet(vector<Place>p, map<string,Transition> m):mp(m),ps(p){};
     
     string get_str_seq(vector<string>firing_seq){
         string s="";
@@ -107,9 +107,19 @@ public:
     void printMarking(vector<Place>ps){
         cout<<"[";
         int len = ps.size();
-        cout<<to_string(ps[0].token);
-        for(int i=1;i<len;i++){
-            cout<<","<<to_string(ps[i].token);
+        int i;
+
+        for(i=0;i<len;i++){
+            if(ps[i].token != 0) {
+                cout<<ps[i].name<<"."<<to_string(ps[i].token);
+                break;
+            }
+        }
+        
+        for(i=i+1;i<len;i++){
+            if(ps[i].token != 0) {
+                cout<<","<<ps[i].name<<"."<<to_string(ps[i].token);
+            }
         }
         cout<<"]\n";
     }
@@ -157,9 +167,30 @@ public:
         cout<<"end: ";
         printMarking(ps);
     } 
-    
+
+    void InitialMarking(){
+        int size = ps.size();
+        for (int i = 0; i < size;i++)
+        {
+            cout << ps[i].name << ": "; cin >> ps[i].token;
+        }
+         for (std::map<string,Transition>::iterator it=mp.begin(); it!=mp.end(); ++it){
+            for(int j=0;j<size;j++){
+                vector<In_Arc>::iterator pIn = find((*it).second.in_arcs.begin(),(*it).second.in_arcs.end(),ps[j]);
+                if(pIn!=(*it).second.in_arcs.end()) pIn->p=ps[j];
+                vector<Out_Arc>::iterator pOut = find((*it).second.out_arcs.begin(),(*it).second.out_arcs.end(),ps[j]);
+                if(pOut!=(*it).second.out_arcs.end()) pOut->p=ps[j];
+            }
+            
+        }
+    };
     void read_Input();
-    void printReachableMarking(vector< vector<Place> >& M, vector<string> firing_seq) {
+    void ReachableMarking(){
+        vector< vector<Place> > M;
+        vector<string> fs;
+        printReachableMarkingRec(M,fs);
+    }
+    void printReachableMarkingRec(vector< vector<Place> >& M, vector<string> firing_seq) {
         M.push_back(ps);
         for (map<string,Transition>::iterator i = mp.begin(); i != mp.end();++i)
         {
@@ -181,7 +212,7 @@ public:
                     cout << get_str_seq(firing_seq) << endl;
                     printMarking(this->ps);
                 }
-                printReachableMarking(M,firing_seq);
+                printReachableMarkingRec(M,firing_seq);
                 firing_seq.pop_back();
             }
         }

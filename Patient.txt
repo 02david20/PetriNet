@@ -1,0 +1,7 @@
+Number of Place: 
+Name: 
+Initial Marking:
+Number of Transition:
+Transition:
+Firing Sequence:
+
