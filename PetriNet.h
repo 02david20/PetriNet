@@ -148,6 +148,10 @@ public:
     }
     
     void run(vector<string>firing_seq){
+        if(firing_seq.empty()) {
+            cout << "Empty Firing Sequence"<< endl;
+            return;
+        }
         string str_seq = get_str_seq(firing_seq);
         int len = firing_seq.size();
         cout<<"Using firing sequence:" << " => "<<str_seq<<'\n';
@@ -188,6 +192,8 @@ public:
     void ReachableMarking(){
         vector< vector<Place> > M;
         vector<string> fs;
+        cout << "Initial Marking: "; 
+        printMarking(this->ps);
         printReachableMarkingRec(M,fs);
     }
     void printReachableMarkingRec(vector< vector<Place> >& M, vector<string> firing_seq) {
