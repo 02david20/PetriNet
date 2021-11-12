@@ -19,6 +19,7 @@ public:
         return p1.name==p2.name;
     }
     friend bool compareMarking(vector<Place>, vector<Place>);
+    int getToken() {return this->token;}
 };
 class Out_Arc{
 private:
@@ -260,6 +261,23 @@ public:
             cout << s;
             cout << ']' << endl;        
         }
+    }
+    void Reset(vector<int> &initial_token) {
+        int size = ps.size();
+        for (int i = 0; i < size;i++)
+        {
+            ps[i].token = initial_token[i];
+        }
+        for (std::map<string,Transition>::iterator it=mp.begin(); it!=mp.end(); ++it){
+            for(int j=0;j<size;j++){
+                vector<In_Arc>::iterator pIn = find((*it).second.in_arcs.begin(),(*it).second.in_arcs.end(),ps[j]);
+                if(pIn!=(*it).second.in_arcs.end()) pIn->p=ps[j];
+                vector<Out_Arc>::iterator pOut = find((*it).second.out_arcs.begin(),(*it).second.out_arcs.end(),ps[j]);
+                if(pOut!=(*it).second.out_arcs.end()) pOut->p=ps[j];
+            }
+        }
+        cout << "Back into inital Marking: ";
+        printMarking(this->ps);
     }
 };
 

@@ -140,18 +140,33 @@ int main(){
     cout << "Please Enter Initial Marking: " << endl;
     PN->InitialMarking();
 
+    //Save initial Marking
+    ////////////////////////////////////////////////////////////////
+    vector<int> initial_token;
+    int size = PN->ps.size();
+    for (int i = 0; i < PN->ps.size(); i++) {
+        initial_token.push_back(PN->ps[i].getToken());
+    }
+    ////////////////////////////////////////////////////////////////
+    
     bool runningPN = true;
     while(runningPN) {
         cout << "---------------" << endl;
         cout << "Choosing option:\n"
              << "1.Running a firing Sequence\n"
-             << "2.Print all reachable Marking\n"
+             << "2.Print all reachable Marking from current Marking\n"
              << "3.Print Place\n"
              << "4.Print Transition\n"
-             << "Clear screen('clear')"; cin >> option;
+             << "5.Firing each transition you choice\n"
+             << "6.Back into initial Marking\n"
+             << "Clear screen('clear')\n";
+        cout <<"Your choice: " ; cin >> option;cout << endl;
         if(option == "1"){
             //Print all transition and places
-            //
+            PN->printPlace();
+            PN->printTransition();
+            cout << endl;
+
             cout << "Enter Firing Sequence (Enter '.' for stop): ";
             vector<string> firing_seq;
             string temp = "aa";
@@ -170,6 +185,7 @@ int main(){
             }
             PN->run(firing_seq);
         }
+      
         else if(option == "2") {
             PN->ReachableMarking();
         }
@@ -178,12 +194,40 @@ int main(){
         }
         else if(option == "4") {
             PN->printTransition();
+        }else if(option == "5") {
+            PN->printPlace();
+            PN->printTransition();
+            cout << endl;
+
+            vector<string> transition;
+            string temp = "nonstop";
+            while (temp != ".") {
+                if (!transition.empty()) transition.pop_back();
+                cout << "Enter transition (Enter '.' to stopping to run Petri Net): ";
+                cin >> temp;
+                if (temp == ".") break;
+                bool valid = false;
+                for (auto i:PN->mp)
+                {
+                    if(i.first == temp) {
+                        valid = true;
+                    }
+                }
+                if(valid) transition.push_back(temp);
+                else {
+                    cout << "Invalid Transition" << endl;
+                }
+                if(!transition.empty())PN->run(transition);
+            }
+        }
+        else if(option == "6") {
+            PN->Reset(initial_token);
         }
         else if(option.find("clear") != string::npos || option.find("Clear") != string::npos 
-                || option.find("cls") != string::npos || option.find("CLEAR") != string::npos) {
+            || option.find("cls") != string::npos || option.find("CLEAR") != string::npos) {
             system("cls");
         }
-    
+        else cout << "Invalid Choice! ";
         string choice;
         cout << "Do you want to continue?(y/n): ";cin >> choice;
         if(choice != "y" && choice != "Y") {
