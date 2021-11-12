@@ -139,12 +139,23 @@ int main(){
     cout << "Please Enter Initial Marking: " << endl;
     PN->InitialMarking();
 
+    //Save initial Marking
+    ////////////////////////////////////////////////////////////////
+    vector<int> initial_token;
+    int size = PN->ps.size();
+    for (int i = 0; i < PN->ps.size(); i++) {
+        initial_token.push_back(PN->ps[i].getToken());
+    }
+    ////////////////////////////////////////////////////////////////
+    
     bool runningPN = true;
     while(runningPN) {
         cout << "---------------" << endl;
         cout << "Choosing option:\n"
              << "1.Running a firing Sequence\n"
-             << "2.Print all reachable Marking\n"; cin >> option;
+             << "2.Firing each transition you choice\n"
+             << "3.Print all reachable Marking\n"
+             << "4.Back into initial Marking\n"; cin >> option;
         if(option == "1"){
             //Print all transition and places
             //
@@ -167,7 +178,29 @@ int main(){
             PN->run(firing_seq);
         }
         else if(option == "2") {
+            vector<string> transition;
+            string temp = "nonstop";
+            while (temp != ".") {
+                if (!transition.empty()) transition.pop_back();
+                cout << "Enter transition (Enter '.' to stopping to run Petri Net): ";
+                cin >> temp;
+                if (temp == ".") break;
+                bool valid = false;
+                for (auto i:PN->mp)
+                {
+                    if(i.first == temp) {
+                        valid = true;
+                    }
+                }
+                if(valid) transition.push_back(temp);
+                PN->run(transition);
+            }
+        }
+        else if(option == "3") {
             PN->ReachableMarking();
+        }
+        else if(option == "4") {
+            PN->Reset(initial_token);
         }
         string choice;
         cout << "Do you want to continue?(y/n): ";cin >> choice;
