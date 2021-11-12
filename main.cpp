@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include "PetriNet.h"
 using namespace std;
 
@@ -144,7 +145,10 @@ int main(){
         cout << "---------------" << endl;
         cout << "Choosing option:\n"
              << "1.Running a firing Sequence\n"
-             << "2.Print all reachable Marking\n"; cin >> option;
+             << "2.Print all reachable Marking\n"
+             << "3.Print Place\n"
+             << "4.Print Transition\n"
+             << "Clear screen('clear')"; cin >> option;
         if(option == "1"){
             //Print all transition and places
             //
@@ -169,6 +173,17 @@ int main(){
         else if(option == "2") {
             PN->ReachableMarking();
         }
+        else if(option == "3") {
+            PN->printPlace();
+        }
+        else if(option == "4") {
+            PN->printTransition();
+        }
+        else if(option.find("clear") != string::npos || option.find("Clear") != string::npos 
+                || option.find("cls") != string::npos || option.find("CLEAR") != string::npos) {
+            system("cls");
+        }
+    
         string choice;
         cout << "Do you want to continue?(y/n): ";cin >> choice;
         if(choice != "y" && choice != "Y") {

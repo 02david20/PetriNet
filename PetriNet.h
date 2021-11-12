@@ -91,9 +91,35 @@ public:
     // Set of place
     vector<Place> ps;
     map<string,Transition> mp;
-public:
-    PetriNet(vector<Place>p, map<string,Transition> m):mp(m),ps(p){};
-    
+private:
+    void printReachableMarkingRec(vector< vector<Place> >& M, vector<string> firing_seq) {
+        M.push_back(ps);
+        for (map<string,Transition>::iterator i = mp.begin(); i != mp.end();++i)
+        {
+            if((*i).second.fire()) {
+                updateMarking((*i).first);
+                firing_seq.push_back((*i).first);
+                //Check if the Marking already exist
+                bool alreadyPresent = false;
+                for (auto i : M)
+                {
+                    if(compareMarking(i,this->ps)) {
+                        this->ps = M.back();
+                        alreadyPresent = true;
+                        break;
+                    }
+                }
+                //If not print the Marking
+                if(!alreadyPresent) {
+                    cout << get_str_seq(firing_seq) << endl;
+                    printMarking(this->ps);
+                }
+                printReachableMarkingRec(M,firing_seq);
+                firing_seq.pop_back();
+            }
+        }
+        return;
+    }
     string get_str_seq(vector<string>firing_seq){
         string s="";
         int len = firing_seq.size();
@@ -103,27 +129,6 @@ public:
         }
         return s;
     }
-    
-    void printMarking(vector<Place>ps){
-        cout<<"[";
-        int len = ps.size();
-        int i;
-
-        for(i=0;i<len;i++){
-            if(ps[i].token != 0) {
-                cout<<ps[i].name<<"."<<to_string(ps[i].token);
-                break;
-            }
-        }
-        
-        for(i=i+1;i<len;i++){
-            if(ps[i].token != 0) {
-                cout<<","<<ps[i].name<<"."<<to_string(ps[i].token);
-            }
-        }
-        cout<<"]\n";
-    }
-
     void updateMarking(string transition){
         int len = ps.size();
         Transition t = mp.find(transition)->second;
@@ -146,6 +151,30 @@ public:
             }
         }
     }
+public:
+    PetriNet(vector<Place>p, map<string,Transition> m):mp(m),ps(p){};
+    
+    void printMarking(vector<Place>ps){
+        cout<<"[";
+        int len = ps.size();
+        int i;
+
+        for(i=0;i<len;i++){
+            if(ps[i].token != 0) {
+                cout<<ps[i].name<<"."<<to_string(ps[i].token);
+                break;
+            }
+        }
+        
+        for(i=i+1;i<len;i++){
+            if(ps[i].token != 0) {
+                cout<<","<<ps[i].name<<"."<<to_string(ps[i].token);
+            }
+        }
+        cout<<"]\n";
+    }
+
+
     
     void run(vector<string>firing_seq){
         if(firing_seq.empty()) {
@@ -188,7 +217,6 @@ public:
             
         }
     };
-    void read_Input();
     void ReachableMarking(){
         vector< vector<Place> > M;
         vector<string> fs;
@@ -196,34 +224,7 @@ public:
         printMarking(this->ps);
         printReachableMarkingRec(M,fs);
     }
-    void printReachableMarkingRec(vector< vector<Place> >& M, vector<string> firing_seq) {
-        M.push_back(ps);
-        for (map<string,Transition>::iterator i = mp.begin(); i != mp.end();++i)
-        {
-            if((*i).second.fire()) {
-                updateMarking((*i).first);
-                firing_seq.push_back((*i).first);
-                //Check if the Marking already exist
-                bool alreadyPresent = false;
-                for (auto i : M)
-                {
-                    if(compareMarking(i,this->ps)) {
-                        this->ps = M.back();
-                        alreadyPresent = true;
-                        break;
-                    }
-                }
-                //If not print the Marking
-                if(!alreadyPresent) {
-                    cout << get_str_seq(firing_seq) << endl;
-                    printMarking(this->ps);
-                }
-                printReachableMarkingRec(M,firing_seq);
-                firing_seq.pop_back();
-            }
-        }
-        return;
-    }
+    
     void printPlace(){
         cout << "Places:\n";
         for(auto c : this->ps){
