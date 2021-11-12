@@ -224,6 +224,42 @@ public:
         }
         return;
     }
+    void printPlace(){
+        cout << "Places:\n";
+        for(auto c : this->ps){
+           cout << '[' << c.name <<','<<c.token << ']' << endl;
+        }
+    }
+    void printTransition(){
+        cout << "Transition:\n";
+        for(auto c : this->mp){
+            cout << c.first <<'[';
+            cout << "In_Arc:";
+            string s = "";
+            for(auto d: c.second.in_arcs){
+                s += '[';
+                s +=  d.p.name;
+                s +=  ',';
+                s +=  to_string(d.weight);
+                s += "],";
+            }
+            s.erase(s.end() - 1);
+            cout << s;
+            cout << ",";
+            s = "";
+            cout << "Out_Arc:";
+            for(auto d: c.second.out_arcs){
+                s += '[';
+                s +=  d.p.name;
+                s +=  ',';
+                s +=  to_string(d.weight);
+                s += "],";
+            }
+            s.erase(s.end() - 1);
+            cout << s;
+            cout << ']' << endl;        
+        }
+    }
 };
 
 bool compareMarking(vector<Place> M1, vector<Place> M2) {
