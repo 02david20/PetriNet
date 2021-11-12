@@ -191,7 +191,7 @@ int main(){
             try{
                 PN->ReachableMarking();
             }
-            catch (const std::bad_array_new_length &e) {
+            catch (const std::exception &e) {
                 
             }
         }
