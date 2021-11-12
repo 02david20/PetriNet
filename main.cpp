@@ -63,24 +63,24 @@ void readOptional(string Input_file,vector<Place> &p,map<string,Transition> &t){
         line.erase(0, (int)line.find('['));
         line.erase(line.begin());
         line.erase(line.end() - 1);
-        string IN = line.substr(0,(int)line.find(';'));
-        string OUT = line.substr((int)line.find(';') + 1, (int)line.size());
+        string INs = line.substr(0,(int)line.find(';'));
+        string OUTs = line.substr((int)line.find(';') + 1, (int)line.size());
         map<string, int> in;
         map<string, int> out;
-        while (IN.find(',') != string::npos)
+        while (INs.find(',') != string::npos)
         {
-           x = IN.find(',');
-           in[IN.substr(0,x)]++;
-           IN.erase(0, x + 1);
+           x = INs.find(',');
+           in[INs.substr(0,x)]++;
+           INs.erase(0, x + 1);
         }
-        in[IN]++;
-        while (OUT.find(',') != string::npos)
+        in[INs]++;
+        while (OUTs.find(',') != string::npos)
         {
-           x = OUT.find(',');
-           out[OUT.substr(0,x)]++;
-           OUT.erase(0, x + 1);
+           x = OUTs.find(',');
+           out[OUTs.substr(0,x)]++;
+           OUTs.erase(0, x + 1);
         }
-        out[OUT]++;
+        out[OUTs]++;
         vector<In_Arc> in_arc;
         for(auto temp: in){
             in_arc.push_back(In_Arc(temp.first,temp.second));
@@ -104,23 +104,26 @@ int main(){
     vector<Place> p;
     map<string,Transition> t;
     PetriNet *PN;
-
+    PETRI_TYPE pt = OTHER;
     bool validOPtion = false;
     while(!validOPtion) {
         if(option == "1" || option == "Patient" || option == "patient"){
             readAsPatient(p,t);
+            pt=PATIENT;
             validOPtion = true;
             cout << "---------------" << endl << 
             "Patient Petri Net" << endl;
         }
         else if(option == "2" || option == "Specialist" || option == "specialist"){
             readAsSpecialist(p,t);
+            pt=SPECIALIST;
             validOPtion = true;
             cout << "---------------" << endl << 
             "Specialist Petri Net" << endl;
         }
         else if(option == "3" || option == "Merge" || option == "merge"){
             readAsMerge(p,t);
+            pt=MERGE;
             validOPtion = true;
             cout << "---------------" << endl << 
             "Merge Petri Net" << endl;
@@ -165,7 +168,6 @@ int main(){
             PN->printPlace();
             PN->printTransition();
             cout << endl;
-
             cout << "Enter Firing Sequence (Enter '.' for stop): ";
             vector<string> firing_seq;
             string temp = "aa";
@@ -182,7 +184,8 @@ int main(){
                 if(valid) firing_seq.push_back(temp);
                 else cout << "Invalid: " << temp << endl <<"Try again!" << endl;
             }
-            PN->run(firing_seq);
+            PN->run(firing_seq,pt);
+
         }
         else if(option == "2") {
             try{
@@ -219,7 +222,7 @@ int main(){
                 else {
                     cout << "Invalid Transition" << endl;
                 }
-                if(!transition.empty())PN->run(transition);
+                if(!transition.empty())PN->run(transition,OTHER);
             }
         }
         else if(option == "6") {

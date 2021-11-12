@@ -5,8 +5,9 @@
 #include <map>
 #include <algorithm>
 #include <string>
+#include <windows.h>
 using namespace std;
-
+enum PETRI_TYPE {PATIENT, SPECIALIST, MERGE, OTHER};
 class Place{
 private:
     string name;
@@ -128,7 +129,7 @@ private:
                 if(valid) {
                     firing_seq.push_back((*i).first);
                     cout << get_str_seq(firing_seq) << endl;
-                    printMarking(this->ps);
+                    printMarking(this->ps,OTHER);
                     printReachableMarkingRec(M,trace,firing_seq);
                     firing_seq.pop_back();
                 }
@@ -172,29 +173,85 @@ private:
 public:
     PetriNet(vector<Place>p, map<string,Transition> m):mp(m),ps(p){};
     
-    void printMarking(vector<Place>ps){
-        cout<<"[";
-        int len = ps.size();
-        int i;
-
-        for(i=0;i<len;i++){
-            if(ps[i].token != 0) {
-                cout<<ps[i].name<<"."<<to_string(ps[i].token);
-                break;
+    void printMarking(vector<Place>ps,PETRI_TYPE pt){
+        if(pt==OTHER){
+            cout<<"[";
+            int len = ps.size();
+            int i;
+            for(i=0;i<len;i++){
+                if(ps[i].token != 0) {
+                    cout<<ps[i].name<<"."<<to_string(ps[i].token);
+                    break;
+                }
             }
-        }
-        
-        for(i=i+1;i<len;i++){
-            if(ps[i].token != 0) {
-                cout<<","<<ps[i].name<<"."<<to_string(ps[i].token);
+            
+            for(i=i+1;i<len;i++){
+                if(ps[i].token != 0) {
+                    cout<<","<<ps[i].name<<"."<<to_string(ps[i].token);
+                }
             }
+            cout<<"]\n";
         }
-        cout<<"]\n";
+        else if(pt==PATIENT){
+            string a = to_string(ps[0].token);
+            string b = to_string(ps[1].token);
+            string c = to_string(ps[2].token);
+           cout<<  " ___       _       ___       _       ___\n"
+                <<"/   \\     | |     /   \\     | |     /   \\\n"
+                <<"| "+a+" |---->| |---->| "+b+" |---->| |---->| "+c+" |\n"
+                <<  "\\___/     |_|     \\___/     |_|     \\___/\n"
+                <<  "wait     start   inside     end     done\n";
+        }
+        else if(pt==SPECIALIST){
+            string a = to_string(ps[0].token);
+            string b = to_string(ps[2].token);
+            string c = to_string(ps[1].token);
+            cout
+            <<"free      end      docu\n"
+            <<" ___       _       ___\n"
+            <<"/   \\     | |     /   \\\n"
+            <<"| "+a+" |<----| |<----| "+c+" |\n"
+            <<"\\___/     |_|     \\___/\n"
+            <<"  |                 ^\n"
+            <<"  v                 |\n"
+            <<"  _       ___       _ \n"
+            <<" | |     /   \\     | |\n"
+            <<" | |---->| "+b+" |---->| |\n"
+            <<" |_|     \\___/     |_|\n"
+            <<"start    busy     change\n";
+        }
+        else if(pt==MERGE){
+            string a = to_string(ps[0].token);
+            string b = to_string(ps[1].token);
+            string c = to_string(ps[2].token);
+            string d = to_string(ps[3].token);
+            string e = to_string(ps[4].token);
+            string f = to_string(ps[5].token);
+            cout
+            <<"          free      end      docu\n"
+ 	        <<"           ___       _       ___\n"
+	        <<"          /   \\     | |     /   \\\n"
+	        <<"          | "+a+" |<----| |<----| "+b+" |\n"
+	        <<"          \\___/     |_|     \\___/\n"
+  	        <<"            |                 ^\n"
+  	        <<"            v                 |\n"
+            <<" ___   start_       ___       _change ___\n"
+            <<"/   \\      | |     /   \\     | |     /   \\\n"
+            <<"| "+c+" | ---->| |---->| "+d+" |---->| |---->| "+e+" |\n"
+            <<"\\___/      |_|     \\___/     |_|     \\___/\n"
+            <<"wait        |      busy       ^       done\n"
+  	        <<"            |       ___       |\n"
+	        <<"            |      /   \\      |\n"
+	        <<"            I----->| "+f+" |------I\n"
+	        <<"                   \\___/     \n"
+            <<"                   inside\n";
+        }
     }
 
 
     
-    void run(vector<string>firing_seq){
+    void run(vector<string>firing_seq, PETRI_TYPE pt){
+        HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
         if(firing_seq.empty()) {
             cout << "Empty Firing Sequence"<< endl;
             return;
@@ -202,21 +259,34 @@ public:
         string str_seq = get_str_seq(firing_seq);
         int len = firing_seq.size();
         cout<<"Using firing sequence:" << " => "<<str_seq<<'\n';
+        SetConsoleTextAttribute(h,10);
         cout<<"start: ";
-        printMarking(ps);
+        SetConsoleTextAttribute(h,7);
+        if(pt!=OTHER) cout<<'\n';
+        printMarking(ps,pt);
         for(int i=0;i<len;i++){
             Transition t = mp.find(firing_seq[i])->second;
             bool fire = t.fire();
             mp.find(firing_seq[i])->second = t;
             if(fire){
+                SetConsoleTextAttribute(h,6);
                 cout<<firing_seq[i]<<" fire!!"<<endl;
+                SetConsoleTextAttribute(h,7);
                 updateMarking(firing_seq[i]);
-                printMarking(ps);
+                printMarking(ps,pt);
             }
-            else cout<<firing_seq[i]<<" fizzle!!"<<endl;
+            else{
+                SetConsoleTextAttribute(h,12);
+                cout<<firing_seq[i]<<" fizzle!!"<<endl;
+                SetConsoleTextAttribute(h,7);
+                
+            }
         }
+        SetConsoleTextAttribute(h,9);
         cout<<"end: ";
-        printMarking(ps);
+        SetConsoleTextAttribute(h,7);
+        if(pt!=OTHER) cout<<'\n';
+        printMarking(ps,pt);
     } 
 
     void InitialMarking(){
@@ -240,7 +310,7 @@ public:
         vector< vector<Place> > trace;
         vector<string> fs;
         cout << "Initial Marking: "; 
-        printMarking(this->ps);
+        printMarking(this->ps,OTHER);
         vector<Place> save;
         for (vector<Place>::iterator i = ps.begin(); i != ps.end(); ++i)
         {
@@ -305,24 +375,7 @@ public:
             }
         }
         cout << "Back into inital Marking: ";
-        printMarking(this->ps);
-    }
-    void Reset(vector<int> &initial_token) {
-        int size = ps.size();
-        for (int i = 0; i < size;i++)
-        {
-            ps[i].token = initial_token[i];
-        }
-        for (std::map<string,Transition>::iterator it=mp.begin(); it!=mp.end(); ++it){
-            for(int j=0;j<size;j++){
-                vector<In_Arc>::iterator pIn = find((*it).second.in_arcs.begin(),(*it).second.in_arcs.end(),ps[j]);
-                if(pIn!=(*it).second.in_arcs.end()) pIn->p=ps[j];
-                vector<Out_Arc>::iterator pOut = find((*it).second.out_arcs.begin(),(*it).second.out_arcs.end(),ps[j]);
-                if(pOut!=(*it).second.out_arcs.end()) pOut->p=ps[j];
-            }
-        }
-        cout << "Back into inital Marking: ";
-        printMarking(this->ps);
+        printMarking(this->ps,OTHER);
     }
 };
 
