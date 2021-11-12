@@ -34,7 +34,63 @@ void readAsMerge(vector<Place> &p,map<string,Transition> &t){
     t.insert(pair<string, Transition>("change",Transition({In_Arc(p[5]),In_Arc(p[3])},{Out_Arc(p[1]),Out_Arc(p[4])})));
 };
 void readOptional(string Input_file,vector<Place> &p,map<string,Transition> &t){
-    cout << "Not yet";
+    ifstream input;
+    input.open(Input_file);
+    string line;
+    int x;
+    getline(input, line);
+    line.erase(0, (int)line.find(' ') + 1);
+    int NumofPlaces = stoi(line);
+    getline(input, line);
+    line.erase(0, (int)line.find(' ') + 1);
+    while (line.find(',') != string::npos)
+    {
+        x = line.find(',');
+        p.push_back(Place{line.substr(0,x)});
+        line.erase(0, x + 1);
+    }
+    p.push_back(Place{line});
+    getline(input, line);
+    line.erase(0, (int)line.find(' ') + 1);
+    int NumofTransitions = stoi(line);
+    while (input.eof())
+    {
+        getline(input, line);
+        line.erase(0, (int)line.find(' ') + 1);
+        string Name;
+        Name = line.substr(0, (int)line.find('['));
+        line.erase(0, (int)line.find('['));
+        line.erase(line.begin());
+        line.erase(line.end() - 1);
+        string IN = line.substr(0,(int)line.find(';'));
+        string OUT = line.substr((int)line.find(';') + 1, (int)line.size());
+        map<string, int> in;
+        map<string, int> out;
+        while (IN.find(',') != string::npos)
+        {
+           x = IN.find(',');
+           in[IN.substr(0,x)]++;
+           IN.erase(0, x + 1);
+        }
+        in[IN]++;
+        while (OUT.find(',') != string::npos)
+        {
+           x = OUT.find(',');
+           out[OUT.substr(0,x)]++;
+           OUT.erase(0, x + 1);
+        }
+        out[OUT]++;
+        vector<In_Arc> in_arc;
+        for(auto temp: in){
+            in_arc.push_back(In_Arc(temp.first,temp.second));
+        }
+        vector<Out_Arc> out_arc;
+        for(auto temp: in){
+            out_arc.push_back(Out_Arc(temp.first,temp.second));
+        }
+        t.insert(pair<string, Transition>(Name,Transition(in_arc,out_arc)));
+    }
+    input.close();
 };
 
 
