@@ -93,33 +93,49 @@ public:
     vector<Place> ps;
     map<string,Transition> mp;
 private:
-    void printReachableMarkingRec(vector< vector<Place> >& M, vector<string> firing_seq) {
+
+    void updateTransition() {
+        int len = this->ps.size();
+        for (std::map<string,Transition>::iterator it=mp.begin(); it!=mp.end(); ++it){
+            for(int j=0;j<len;j++){
+                vector<In_Arc>::iterator pIn = find((*it).second.in_arcs.begin(),(*it).second.in_arcs.end(),ps[j]);
+                if(pIn!=(*it).second.in_arcs.end()) pIn->p=ps[j];
+                vector<Out_Arc>::iterator pOut = find((*it).second.out_arcs.begin(),(*it).second.out_arcs.end(),ps[j]);
+                if(pOut!=(*it).second.out_arcs.end()) pOut->p=ps[j];
+            }
+        }
+    }
+    void printReachableMarkingRec(vector< vector<Place> >& M, vector< vector<Place> >& trace,vector<string> firing_seq) {
         M.push_back(ps);
+        trace.push_back(ps);
         for (map<string,Transition>::iterator i = mp.begin(); i != mp.end();++i)
         {
             if((*i).second.fire()) {
                 updateMarking((*i).first);
-                firing_seq.push_back((*i).first);
                 //Check if the Marking already exist
-                bool alreadyPresent = false;
-                for (auto i : M)
+                bool valid = true;
+                for (auto marking : M)
                 {
-                    if(compareMarking(i,this->ps)) {
+                    if(compareMarking(marking,this->ps)) {
                         this->ps = M.back();
-                        alreadyPresent = true;
+                        updateTransition();
+                        valid = false;
                         break;
                     }
                 }
                 //If not print the Marking
-                if(!alreadyPresent) {
+                if(valid) {
+                    firing_seq.push_back((*i).first);
                     cout << get_str_seq(firing_seq) << endl;
                     printMarking(this->ps);
+                    printReachableMarkingRec(M,trace,firing_seq);
+                    firing_seq.pop_back();
                 }
-                printReachableMarkingRec(M,firing_seq);
-                firing_seq.pop_back();
             }
         }
-        return;
+        trace.pop_back();
+        this->ps = trace.back();
+        updateTransition();
     }
     string get_str_seq(vector<string>firing_seq){
         string s="";
@@ -220,10 +236,11 @@ public:
     };
     void ReachableMarking(){
         vector< vector<Place> > M;
+        vector< vector<Place> > trace;
         vector<string> fs;
         cout << "Initial Marking: "; 
         printMarking(this->ps);
-        printReachableMarkingRec(M,fs);
+        printReachableMarkingRec(M,trace,fs);
     }
     
     void printPlace(){
