@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include "PetriNet.h"
 using namespace std;
 
@@ -34,7 +35,63 @@ void readAsMerge(vector<Place> &p,map<string,Transition> &t){
     t.insert(pair<string, Transition>("change",Transition({In_Arc(p[5]),In_Arc(p[3])},{Out_Arc(p[1]),Out_Arc(p[4])})));
 };
 void readOptional(string Input_file,vector<Place> &p,map<string,Transition> &t){
-    cout << "Not yet";
+    ifstream input;
+    input.open(Input_file);
+    string line;
+    int x;
+    getline(input, line);
+    line.erase(0, (int)line.find(' ') + 1);
+    int NumofPlaces = stoi(line);
+    getline(input, line);
+    line.erase(0, (int)line.find(' ') + 1);
+    while (line.find(',') != string::npos)
+    {
+        x = line.find(',');
+        p.push_back(Place{line.substr(0,x)});
+        line.erase(0, x + 1);
+    }
+    p.push_back(Place{line});
+    getline(input, line);
+    line.erase(0, (int)line.find(' ') + 1);
+    int NumofTransitions = stoi(line);
+    while (input.eof())
+    {
+        getline(input, line);
+        line.erase(0, (int)line.find(' ') + 1);
+        string Name;
+        Name = line.substr(0, (int)line.find('['));
+        line.erase(0, (int)line.find('['));
+        line.erase(line.begin());
+        line.erase(line.end() - 1);
+        string IN = line.substr(0,(int)line.find(';'));
+        string OUT = line.substr((int)line.find(';') + 1, (int)line.size());
+        map<string, int> in;
+        map<string, int> out;
+        while (IN.find(',') != string::npos)
+        {
+           x = IN.find(',');
+           in[IN.substr(0,x)]++;
+           IN.erase(0, x + 1);
+        }
+        in[IN]++;
+        while (OUT.find(',') != string::npos)
+        {
+           x = OUT.find(',');
+           out[OUT.substr(0,x)]++;
+           OUT.erase(0, x + 1);
+        }
+        out[OUT]++;
+        vector<In_Arc> in_arc;
+        for(auto temp: in){
+            in_arc.push_back(In_Arc(temp.first,temp.second));
+        }
+        vector<Out_Arc> out_arc;
+        for(auto temp: in){
+            out_arc.push_back(Out_Arc(temp.first,temp.second));
+        }
+        t.insert(pair<string, Transition>(Name,Transition(in_arc,out_arc)));
+    }
+    input.close();
 };
 
 
@@ -82,7 +139,6 @@ int main(){
     PN = new PetriNet(p,t);
     cout << "Please Enter Initial Marking: " << endl;
     PN->InitialMarking();
-    
     //Save initial Marking
     ////////////////////////////////////////////////////////////////
     vector<int> initial_token;
@@ -97,12 +153,19 @@ int main(){
         cout << "---------------" << endl;
         cout << "Choosing option:\n"
              << "1.Running a firing Sequence\n"
-             << "2.Firing each transition you choice\n"
-             << "3.Print all reachable Marking\n"
-             << "4.Back into initial Marking\n"; cin >> option;
+             << "2.Print all reachable Marking from current Marking\n"
+             << "3.Print Place\n"
+             << "4.Print Transition\n"
+             << "5.Firing each transition you choice\n"
+             << "6.Back into initial Marking\n"
+             << "Clear screen('clear')\n";
+        cout <<"Your choice: " ; cin >> option;cout << endl;
         if(option == "1"){
             //Print all transition and places
-            //
+            PN->printPlace();
+            PN->printTransition();
+            cout << endl;
+
             cout << "Enter Firing Sequence (Enter '.' for stop): ";
             vector<string> firing_seq;
             string temp = "aa";
@@ -122,6 +185,22 @@ int main(){
             PN->run(firing_seq);
         }
         else if(option == "2") {
+            try{
+                PN->ReachableMarking();
+            }
+            catch (const std::bad_array_new_length &e) {
+                
+            }
+        }
+        else if(option == "3") {
+            PN->printPlace();
+        }
+        else if(option == "4") {
+            PN->printTransition();
+        }else if(option == "5") {
+            PN->printPlace();
+            PN->printTransition();
+            cout << endl;
             vector<string> transition;
             string temp = "nonstop";
             while (temp != ".") {
@@ -137,15 +216,20 @@ int main(){
                     }
                 }
                 if(valid) transition.push_back(temp);
-                PN->run(transition);
+                else {
+                    cout << "Invalid Transition" << endl;
+                }
+                if(!transition.empty())PN->run(transition);
             }
         }
-        else if(option == "3") {
-            PN->ReachableMarking();
-        }
-        else if(option == "4") {
+        else if(option == "6") {
             PN->Reset(initial_token);
         }
+        else if(option.find("clear") != string::npos || option.find("Clear") != string::npos 
+            || option.find("cls") != string::npos || option.find("CLEAR") != string::npos) {
+            system("cls");
+        }
+        else cout << "Invalid Choice! ";
         string choice;
         cout << "Do you want to continue?(y/n): ";cin >> choice;
         if(choice != "y" && choice != "Y") {

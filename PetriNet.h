@@ -93,9 +93,51 @@ public:
     // Set of place
     vector<Place> ps;
     map<string,Transition> mp;
-public:
-    PetriNet(vector<Place>p, map<string,Transition> m):mp(m),ps(p){};
-    
+private:
+
+    void updateTransition() {
+        int len = this->ps.size();
+        for (std::map<string,Transition>::iterator it=mp.begin(); it!=mp.end(); ++it){
+            for(int j=0;j<len;j++){
+                vector<In_Arc>::iterator pIn = find((*it).second.in_arcs.begin(),(*it).second.in_arcs.end(),ps[j]);
+                if(pIn!=(*it).second.in_arcs.end()) pIn->p=ps[j];
+                vector<Out_Arc>::iterator pOut = find((*it).second.out_arcs.begin(),(*it).second.out_arcs.end(),ps[j]);
+                if(pOut!=(*it).second.out_arcs.end()) pOut->p=ps[j];
+            }
+        }
+    }
+    void printReachableMarkingRec(vector< vector<Place> >& M, vector< vector<Place> >& trace,vector<string> firing_seq) {
+        M.push_back(ps);
+        trace.push_back(ps);
+        for (map<string,Transition>::iterator i = mp.begin(); i != mp.end();++i)
+        {
+            if((*i).second.fire()) {
+                updateMarking((*i).first);
+                //Check if the Marking already exist
+                bool valid = true;
+                for (auto marking : M)
+                {
+                    if(compareMarking(marking,this->ps)) {
+                        this->ps = M.back();
+                        updateTransition();
+                        valid = false;
+                        break;
+                    }
+                }
+                //If not print the Marking
+                if(valid) {
+                    firing_seq.push_back((*i).first);
+                    cout << get_str_seq(firing_seq) << endl;
+                    printMarking(this->ps);
+                    printReachableMarkingRec(M,trace,firing_seq);
+                    firing_seq.pop_back();
+                }
+            }
+        }
+        trace.pop_back();
+        this->ps = trace.back();
+        updateTransition();
+    }
     string get_str_seq(vector<string>firing_seq){
         string s="";
         int len = firing_seq.size();
@@ -105,27 +147,6 @@ public:
         }
         return s;
     }
-    
-    void printMarking(vector<Place>ps){
-        cout<<"[";
-        int len = ps.size();
-        int i;
-
-        for(i=0;i<len;i++){
-            if(ps[i].token != 0) {
-                cout<<ps[i].name<<"."<<to_string(ps[i].token);
-                break;
-            }
-        }
-        
-        for(i=i+1;i<len;i++){
-            if(ps[i].token != 0) {
-                cout<<","<<ps[i].name<<"."<<to_string(ps[i].token);
-            }
-        }
-        cout<<"]\n";
-    }
-
     void updateMarking(string transition){
         int len = ps.size();
         Transition t = mp.find(transition)->second;
@@ -148,6 +169,30 @@ public:
             }
         }
     }
+public:
+    PetriNet(vector<Place>p, map<string,Transition> m):mp(m),ps(p){};
+    
+    void printMarking(vector<Place>ps){
+        cout<<"[";
+        int len = ps.size();
+        int i;
+
+        for(i=0;i<len;i++){
+            if(ps[i].token != 0) {
+                cout<<ps[i].name<<"."<<to_string(ps[i].token);
+                break;
+            }
+        }
+        
+        for(i=i+1;i<len;i++){
+            if(ps[i].token != 0) {
+                cout<<","<<ps[i].name<<"."<<to_string(ps[i].token);
+            }
+        }
+        cout<<"]\n";
+    }
+
+
     
     void run(vector<string>firing_seq){
         if(firing_seq.empty()) {
@@ -190,41 +235,77 @@ public:
             
         }
     };
-    void read_Input();
     void ReachableMarking(){
         vector< vector<Place> > M;
+        vector< vector<Place> > trace;
         vector<string> fs;
         cout << "Initial Marking: "; 
         printMarking(this->ps);
-        printReachableMarkingRec(M,fs);
-    }
-    void printReachableMarkingRec(vector< vector<Place> >& M, vector<string> firing_seq) {
-        M.push_back(ps);
-        for (map<string,Transition>::iterator i = mp.begin(); i != mp.end();++i)
+        vector<Place> save;
+        for (vector<Place>::iterator i = ps.begin(); i != ps.end(); ++i)
         {
-            if((*i).second.fire()) {
-                updateMarking((*i).first);
-                firing_seq.push_back((*i).first);
-                //Check if the Marking already exist
-                bool alreadyPresent = false;
-                for (auto i : M)
-                {
-                    if(compareMarking(i,this->ps)) {
-                        this->ps = M.back();
-                        alreadyPresent = true;
-                        break;
-                    }
-                }
-                //If not print the Marking
-                if(!alreadyPresent) {
-                    cout << get_str_seq(firing_seq) << endl;
-                    printMarking(this->ps);
-                }
-                printReachableMarkingRec(M,firing_seq);
-                firing_seq.pop_back();
+            save.push_back(*i);
+        }
+        printReachableMarkingRec(M,trace,fs);
+        while(!ps.empty()) ps.pop_back();
+        for (vector<Place>::iterator i = save.begin(); i != save.end(); ++i)
+        {
+            ps.push_back(*i);
+        }
+    }
+    
+    void printPlace(){
+        cout << "Places:\n";
+        for(auto c : this->ps){
+           cout << '[' << c.name <<','<<c.token << ']' << endl;
+        }
+    }
+    void printTransition(){
+        cout << "Transition:\n";
+        for(auto c : this->mp){
+            cout << c.first <<'[';
+            cout << "In_Arc:";
+            string s = "";
+            for(auto d: c.second.in_arcs){
+                s += '[';
+                s +=  d.p.name;
+                s +=  ',';
+                s +=  to_string(d.weight);
+                s += "],";
+            }
+            s.erase(s.end() - 1);
+            cout << s;
+            cout << ";";
+            s = "";
+            cout << "Out_Arc:";
+            for(auto d: c.second.out_arcs){
+                s += '[';
+                s +=  d.p.name;
+                s +=  ',';
+                s +=  to_string(d.weight);
+                s += "],";
+            }
+            s.erase(s.end() - 1);
+            cout << s;
+            cout << ']' << endl;        
+        }
+    }
+    void Reset(vector<int> &initial_token) {
+        int size = ps.size();
+        for (int i = 0; i < size;i++)
+        {
+            ps[i].token = initial_token[i];
+        }
+        for (std::map<string,Transition>::iterator it=mp.begin(); it!=mp.end(); ++it){
+            for(int j=0;j<size;j++){
+                vector<In_Arc>::iterator pIn = find((*it).second.in_arcs.begin(),(*it).second.in_arcs.end(),ps[j]);
+                if(pIn!=(*it).second.in_arcs.end()) pIn->p=ps[j];
+                vector<Out_Arc>::iterator pOut = find((*it).second.out_arcs.begin(),(*it).second.out_arcs.end(),ps[j]);
+                if(pOut!=(*it).second.out_arcs.end()) pOut->p=ps[j];
             }
         }
-        return;
+        cout << "Back into inital Marking: ";
+        printMarking(this->ps);
     }
     void Reset(vector<int> &initial_token) {
         int size = ps.size();
