@@ -247,7 +247,7 @@ public:
             }
             s.erase(s.end() - 1);
             cout << s;
-            cout << ",";
+            cout << ";";
             s = "";
             cout << "Out_Arc:";
             for(auto d: c.second.out_arcs){
