@@ -185,9 +185,13 @@ int main(){
             }
             PN->run(firing_seq);
         }
-      
         else if(option == "2") {
-            PN->ReachableMarking();
+            try{
+                PN->ReachableMarking();
+            }
+            catch (const std::bad_array_new_length &e) {
+                
+            }
         }
         else if(option == "3") {
             PN->printPlace();

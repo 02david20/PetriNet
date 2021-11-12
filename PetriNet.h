@@ -240,7 +240,17 @@ public:
         vector<string> fs;
         cout << "Initial Marking: "; 
         printMarking(this->ps);
+        vector<Place> save;
+        for (vector<Place>::iterator i = ps.begin(); i != ps.end(); ++i)
+        {
+            save.push_back(*i);
+        }
         printReachableMarkingRec(M,trace,fs);
+        while(!ps.empty()) ps.pop_back();
+        for (vector<Place>::iterator i = save.begin(); i != save.end(); ++i)
+        {
+            ps.push_back(*i);
+        }
     }
     
     void printPlace(){
