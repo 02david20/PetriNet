@@ -97,6 +97,7 @@ void readOptional(string Input_file,vector<Place> &p,map<string,Transition> &t){
 
 int main(){
     //so luong place
+    SetConsoleTitle(TEXT("PETRI NET SIMULATOR"));
     cout << "Option:" << endl;
     cout << "1.Patient" << endl << "2.Specialist" << endl << "3.Merge" << endl << "4.Optional" << endl;
     string option; cout << "Your Option: "; cin >> option;
@@ -191,7 +192,7 @@ int main(){
             try{
                 PN->ReachableMarking();
             }
-            catch (const std::bad_array_new_length &e) {
+            catch (const std::exception &e) {
                 
             }
         }
@@ -222,7 +223,7 @@ int main(){
                 else {
                     cout << "Invalid Transition" << endl;
                 }
-                if(!transition.empty())PN->run(transition,OTHER);
+                if(!transition.empty())PN->run(transition,pt);
             }
         }
         else if(option == "6") {

@@ -200,7 +200,7 @@ public:
                 <<"/   \\     | |     /   \\     | |     /   \\\n"
                 <<"| "+a+" |---->| |---->| "+b+" |---->| |---->| "+c+" |\n"
                 <<  "\\___/     |_|     \\___/     |_|     \\___/\n"
-                <<  "wait     start   inside     end     done\n";
+                <<  "wait     start   inside   change     done\n";
         }
         else if(pt==SPECIALIST){
             string a = to_string(ps[0].token);
