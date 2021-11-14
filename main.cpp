@@ -54,7 +54,7 @@ void readOptional(string Input_file,vector<Place> &p,map<string,Transition> &t){
     getline(input, line);
     line.erase(0, (int)line.find(' ') + 1);
     int NumofTransitions = stoi(line);
-    while (input.eof())
+    while (!input.eof())
     {
         getline(input, line);
         line.erase(0, (int)line.find(' ') + 1);
