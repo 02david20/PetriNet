@@ -34,6 +34,11 @@ void readAsMerge(vector<Place> &p,map<string,Transition> &t){
     t.insert(pair<string, Transition>("end",Transition({In_Arc(p[1])},{Out_Arc(p[0])})));
     t.insert(pair<string, Transition>("change",Transition({In_Arc(p[5]),In_Arc(p[3])},{Out_Arc(p[1]),Out_Arc(p[4])})));
 };
+void readAsEmpty(vector<Place> &p,map<string,Transition> &t){
+    p.push_back(Place{"free"});
+    // # liet ke Arc in va out cho moi transition
+    t.insert(pair<string, Transition>("start",Transition({In_Arc(p[0])},{})));
+};
 void readOptional(string Input_file,vector<Place> &p,map<string,Transition> &t){
     ifstream input;
     input.open(Input_file);
@@ -54,7 +59,7 @@ void readOptional(string Input_file,vector<Place> &p,map<string,Transition> &t){
     getline(input, line);
     line.erase(0, (int)line.find(' ') + 1);
     int NumofTransitions = stoi(line);
-    while (input.eof())
+    while (!input.eof())
     {
         getline(input, line);
         line.erase(0, (int)line.find(' ') + 1);
@@ -83,10 +88,16 @@ void readOptional(string Input_file,vector<Place> &p,map<string,Transition> &t){
         out[OUTs]++;
         vector<In_Arc> in_arc;
         for(auto temp: in){
+            if(INs==""){
+                break;
+            }
             in_arc.push_back(In_Arc(temp.first,temp.second));
         }
         vector<Out_Arc> out_arc;
-        for(auto temp: in){
+        for(auto temp: out){
+            if(OUTs==""){
+                break;
+            }
             out_arc.push_back(Out_Arc(temp.first,temp.second));
         }
         t.insert(pair<string, Transition>(Name,Transition(in_arc,out_arc)));
@@ -133,6 +144,10 @@ int main(){
             string Input;
             cout << "Enter Input file (Input file must be in the same directory):" << endl; cin >> Input;
             readOptional(Input,p,t);
+            validOPtion = true;
+        }
+        else if(option == "5" || option == "Bug" || option == "bug"){
+            readAsEmpty(p,t);
             validOPtion = true;
         }
         if(!validOPtion){
