@@ -41,7 +41,7 @@ void readOptional(string Input_file,vector<Place> &p,map<string,Transition> &t){
     int x;
     getline(input, line);
     line.erase(0, (int)line.find(' ') + 1);
-    int NumofPlaces = stoi(line);
+    int NumofPlaces = stoi(line, nullptr);
     getline(input, line);
     line.erase(0, (int)line.find(' ') + 1);
     while (line.find(',') != string::npos)
@@ -53,7 +53,7 @@ void readOptional(string Input_file,vector<Place> &p,map<string,Transition> &t){
     p.push_back(Place{line});
     getline(input, line);
     line.erase(0, (int)line.find(' ') + 1);
-    int NumofTransitions = stoi(line);
+    int NumofTransitions = stoi(line, nullptr);
     while (!input.eof())
     {
         getline(input, line);
@@ -63,24 +63,28 @@ void readOptional(string Input_file,vector<Place> &p,map<string,Transition> &t){
         line.erase(0, (int)line.find('['));
         line.erase(line.begin());
         line.erase(line.end() - 1);
-        string IN = line.substr(0,(int)line.find(';'));
-        string OUT = line.substr((int)line.find(';') + 1, (int)line.size());
+        string INS = line.substr(0,(int)line.find(';'));
+        string OUTS = line.substr((int)line.find(';') + 1, (int)line.size());
         map<string, int> in;
         map<string, int> out;
-        while (IN.find(',') != string::npos)
-        {
-           x = IN.find(',');
-           in[IN.substr(0,x)]++;
-           IN.erase(0, x + 1);
+        if((int)INS.size() > 0){
+            while (INS.find(',') != string::npos)
+            {
+                x = INS.find(',');
+                in[INS.substr(0,x)]++;
+                INS.erase(0, x + 1);
+            }
+            in[INS]++;
         }
-        in[IN]++;
-        while (OUT.find(',') != string::npos)
-        {
-           x = OUT.find(',');
-           out[OUT.substr(0,x)]++;
-           OUT.erase(0, x + 1);
+        if((int)OUTS.size() > 0){
+            while (OUTS.find(',') != string::npos)
+            {
+                x = OUTS.find(',');
+                out[OUTS.substr(0,x)]++;
+                OUTS.erase(0, x + 1);
+            }
+            out[OUTS]++;
         }
-        out[OUT]++;
         vector<In_Arc> in_arc;
         for(auto temp: in){
             in_arc.push_back(In_Arc(temp.first,temp.second));
