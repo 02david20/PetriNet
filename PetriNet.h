@@ -22,12 +22,15 @@ public:
     }
     friend bool compareMarking(vector<Place>, vector<Place>);
     int getToken() {return this->token;}
+    string getName() {return this->name;}
+    void setToken(int newToken) {this->token = newToken;}
 };
 class Out_Arc{
 private:
     Place p;
     int weight;
     friend class PetriNet;
+    friend class Transition;
 public:
     Out_Arc(Place pl, int w=1): p(pl),weight(w){};
     void trigger(){
@@ -42,6 +45,7 @@ private:
     Place p;
     int weight;
     friend class PetriNet;
+    friend class Transition;
 public:
     In_Arc(Place pl, int w=1): p(pl),weight(w){};
     void trigger(){
@@ -78,15 +82,31 @@ public:
             vector<In_Arc>::iterator it1 = in_arcs.begin();
             while(it1!=in_arcs.end()) {
                 (*it1).trigger();
+                UpdatePlace(it1->p.getName(),it1->p.getToken());
                 it1++;
             }
             vector<Out_Arc>::iterator it2 = out_arcs.begin();
             while(it2!=out_arcs.end()) {
                 (*it2).trigger();
+                UpdatePlace(it2->p.getName(),it2->p.getToken());
                 it2++;
             }
         }
         return enabled;
+    }
+private:
+    void UpdatePlace(string name, int token) {
+        vector<In_Arc>::iterator it1 = in_arcs.begin();
+        while(it1!=in_arcs.end()) {
+            if(it1->p.getName() == name) 
+                it1->p.setToken(token);
+            it1++;
+        }
+        vector<Out_Arc>::iterator it2 = out_arcs.begin();
+        while(it2!=out_arcs.end()) {
+            if(it2->p.getName() == name) it2->p.setToken(token);
+            it2++;
+        }
     }
 };
 class PetriNet{
