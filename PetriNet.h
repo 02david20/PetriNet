@@ -343,7 +343,8 @@ public:
                 s +=  to_string(d.weight);
                 s += "],";
             }
-            s.erase(s.end() - 1);
+            if(s=="") s+="[]";
+            else s.erase(s.end() - 1);
             cout << s;
             cout << ";";
             s = "";
@@ -355,7 +356,8 @@ public:
                 s +=  to_string(d.weight);
                 s += "],";
             }
-            s.erase(s.end() - 1);
+            if(s=="") s+="[]";
+            else s.erase(s.end() - 1);
             cout << s;
             cout << ']' << endl;        
         }
