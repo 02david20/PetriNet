@@ -1,0 +1,5 @@
+NumofPlaces 2
+Places P1,P2
+NumofTransitions 2
+Transitions T1[P1,P2;P1]
+Transitions T1[P2;P1]
