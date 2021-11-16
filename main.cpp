@@ -86,7 +86,7 @@ void readOptional(string Input_file,vector<Place> &p,map<string,Transition> &t){
             in_arc.push_back(In_Arc(temp.first,temp.second));
         }
         vector<Out_Arc> out_arc;
-        for(auto temp: in){
+        for(auto temp: out){
             out_arc.push_back(Out_Arc(temp.first,temp.second));
         }
         t.insert(pair<string, Transition>(Name,Transition(in_arc,out_arc)));
