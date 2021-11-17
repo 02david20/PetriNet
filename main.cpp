@@ -184,7 +184,7 @@ int main(){
             PN->printPlace();
             PN->printTransition();
             cout << endl;
-            cout << "Enter Firing Sequence (Enter '.' for stop): ";
+            cout << "Enter Firing Sequence (Enter '.' to stop): ";
             vector<string> firing_seq;
             string temp = "aa";
             while(temp != ".") {
@@ -198,7 +198,7 @@ int main(){
                     }
                 }
                 if(valid) firing_seq.push_back(temp);
-                else cout << "Invalid: " << temp << endl <<"Try again!" << endl;
+                else cout << "Invalid: " << temp << endl <<"Try again at '" << temp << "'!" << endl;
             }
             PN->run(firing_seq,pt);
 
@@ -224,7 +224,7 @@ int main(){
             string temp = "nonstop";
             while (temp != ".") {
                 if (!transition.empty()) transition.pop_back();
-                cout << "Enter transition (Enter '.' to stopping to run Petri Net): ";
+                cout << "Enter transition (Enter '.' to stop firing Petri Net): ";
                 cin >> temp;
                 if (temp == ".") break;
                 bool valid = false;
