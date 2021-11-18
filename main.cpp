@@ -109,10 +109,24 @@ void readOptional(string Input_file,vector<Place> &p,map<string,Transition> &t){
 int main(){
     //so luong place
     SetConsoleTitle(TEXT("PETRI NET SIMULATOR"));
-    cout << "Option:" << endl;
-    cout << "1.Patient" << endl << "2.Specialist" << endl << "3.Merge" << endl << "4.Optional" << endl;
-    string option; cout << "Your Option: "; cin >> option;
-
+    HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(h,11);
+    string option;
+    cout<<" \t_______  _______ _________ _______ _________   _        _______ _________\n"
+           <<" \t(  ____ )(  ____ \\__   __/(  ____ )\\__   __/  ( (    /|(  ____ \\__   __/\n"
+           <<" \t| (    )|| (    \\/   ) (   | (    )|   ) (     |  \\  ( || (    \\/   ) (  \n"
+           <<" \t| (____)|| (__       | |   | (____)|   | |     |   \\ | || (__       | |  \n"
+           <<" \t|  _____)|  __)      | |   |     __)   | |     | (\\ \\) ||  __)      | |  \n"
+           <<" \t| (      | (         | |   | (\\ (      | |     | | \\   || (         | |  \n"
+           <<" \t| )      | (____/\\   | |   | ) \\ \\_____) (___  | )  \\  || (____/\\   | |  \n"
+           <<" \t|/       (_______/   )_(   |/   \\__/\\_______/  |/    )_)(_______/   )_(  \n\n";
+           SetConsoleTextAttribute(h,2);
+           cout << "\t\tOption:" << endl;
+           cout << "\t\t1.Patient" << endl << "\t\t2.Specialist" << endl << "\t\t3.Merge" << endl << "\t\t4.Optional" << endl;
+           cout << "\n\tYour Option: ";
+    cin>>option;
+    SetConsoleTextAttribute(h,15);
+    system("cls");
     vector<Place> p;
     map<string,Transition> t;
     PetriNet *PN;
@@ -123,22 +137,22 @@ int main(){
             readAsPatient(p,t);
             pt=PATIENT;
             validOPtion = true;
-            cout << "---------------" << endl << 
-            "Patient Petri Net" << endl;
+            cout <<
+            "<---Patient Petri Net--->" << endl;
         }
         else if(option == "2" || option == "Specialist" || option == "specialist"){
             readAsSpecialist(p,t);
             pt=SPECIALIST;
             validOPtion = true;
-            cout << "---------------" << endl << 
-            "Specialist Petri Net" << endl;
+            cout <<
+            "<---Specialist Petri Net--->" << endl;
         }
         else if(option == "3" || option == "Merge" || option == "merge"){
             readAsMerge(p,t);
             pt=MERGE;
             validOPtion = true;
-            cout << "---------------" << endl << 
-            "Merge Petri Net" << endl;
+            cout <<
+            "<---Merge Petri Net--->" << endl;
         }
         else if(option == "4" || option == "Optional" || option == "optional"){
             string Input;
@@ -156,7 +170,7 @@ int main(){
     }
     
     PN = new PetriNet(p,t);
-    cout << "Please Enter Initial Marking: " << endl;
+    cout << "Please Enter Initial Marking: "<< endl;
     PN->InitialMarking();
     //Save initial Marking
     ////////////////////////////////////////////////////////////////
@@ -263,6 +277,7 @@ int main(){
             cout << "Done!";
             runningPN = false;
         }
+        system("cls");
     }
     delete PN;
     return 0;

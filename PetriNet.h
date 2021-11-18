@@ -341,29 +341,29 @@ public:
             string a = to_string(ps[0].token);
             string b = to_string(ps[1].token);
             string c = to_string(ps[2].token);
-           cout<<  " ___       _       ___       _       ___\n"
-                <<"/   \\     | |     /   \\     | |     /   \\\n"
-                <<"| "+a+" |---->| |---->| "+b+" |---->| |---->| "+c+" |\n"
-                <<  "\\___/     |_|     \\___/     |_|     \\___/\n"
-                <<  "wait     start   inside   change     done\n";
+           cout<<  "\t ___       _       ___       _       ___\n"
+                <<"\t/   \\     | |     /   \\     | |     /   \\\n"
+                <<"\t| "+a+" |---->| |---->| "+b+" |---->| |---->| "+c+" |\n"
+                <<  "\t\\___/     |_|     \\___/     |_|     \\___/\n"
+                <<  "\twait     start   inside   change     done\n";
         }
         else if(pt==SPECIALIST){
             string a = to_string(ps[0].token);
             string b = to_string(ps[2].token);
             string c = to_string(ps[1].token);
             cout
-            <<"free      end      docu\n"
-            <<" ___       _       ___\n"
-            <<"/   \\     | |     /   \\\n"
-            <<"| "+a+" |<----| |<----| "+c+" |\n"
-            <<"\\___/     |_|     \\___/\n"
-            <<"  |                 ^\n"
-            <<"  v                 |\n"
-            <<"  _       ___       _ \n"
-            <<" | |     /   \\     | |\n"
-            <<" | |---->| "+b+" |---->| |\n"
-            <<" |_|     \\___/     |_|\n"
-            <<"start    busy     change\n";
+            <<"\tfree      end      docu\n"
+            <<"\t ___       _       ___\n"
+            <<"\t/   \\     | |     /   \\\n"
+            <<"\t| "+a+" |<----| |<----| "+c+" |\n"
+            <<"\t\\___/     |_|     \\___/\n"
+            <<"\t  |                 ^\n"
+            <<"\t  v                 |\n"
+            <<"\t  _       ___       _ \n"
+            <<"\t | |     /   \\     | |\n"
+            <<"\t | |---->| "+b+" |---->| |\n"
+            <<"\t |_|     \\___/     |_|\n"
+            <<"\tstart    busy     change\n";
         }
         else if(pt==MERGE){
             string a = to_string(ps[0].token);
@@ -373,23 +373,23 @@ public:
             string e = to_string(ps[4].token);
             string f = to_string(ps[5].token);
             cout
-            <<"          free      end      docu\n"
- 	        <<"           ___       _       ___\n"
-	        <<"          /   \\     | |     /   \\\n"
-	        <<"          | "+a+" |<----| |<----| "+b+" |\n"
-	        <<"          \\___/     |_|     \\___/\n"
-  	        <<"            |                 ^\n"
-  	        <<"            v                 |\n"
-            <<" ___   start_       ___       _change ___\n"
-            <<"/   \\      | |     /   \\     | |     /   \\\n"
-            <<"| "+c+" | ---->| |---->| "+d+" |---->| |---->| "+e+" |\n"
-            <<"\\___/      |_|     \\___/     |_|     \\___/\n"
-            <<"wait        |      busy       ^       done\n"
-  	        <<"            |       ___       |\n"
-	        <<"            |      /   \\      |\n"
-	        <<"            I----->| "+f+" |------I\n"
-	        <<"                   \\___/     \n"
-            <<"                   inside\n";
+            <<"\t          free      end      docu\n"
+ 	        <<"\t           ___       _       ___\n"
+	        <<"\t          /   \\     | |     /   \\\n"
+	        <<"\t          | "+a+" |<----| |<----| "+b+" |\n"
+	        <<"\t          \\___/     |_|     \\___/\n"
+  	        <<"\t            |                 ^\n"
+  	        <<"\t            v                 |\n"
+            <<"\t ___   start_       ___       _change ___\n"
+            <<"\t/   \\      | |     /   \\     | |     /   \\\n"
+            <<"\t| "+c+" | ---->| |---->| "+d+" |---->| |---->| "+e+" |\n"
+            <<"\t\\___/      |_|     \\___/     |_|     \\___/\n"
+            <<"\twait        |      busy       ^       done\n"
+  	        <<"\t            |       ___       |\n"
+	        <<"\t            |      /   \\      |\n"
+	        <<"\t            I----->| "+f+" |------I\n"
+	        <<"\t                   \\___/     \n"
+            <<"\t                   inside\n";
         }
     }
 
