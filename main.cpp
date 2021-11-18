@@ -243,7 +243,7 @@ int main(){
             }
         }
         else if(option == "6") {
-            cout << "Back into ini1tal Marking! " << endl; 
+            cout << "Back into initial Marking! " << endl; 
             PN->Reset(initial_token);
         }
         else if(option == "7") {
