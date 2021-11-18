@@ -177,6 +177,7 @@ int main(){
              << "4.Print Transition\n"
              << "5.Firing each transition you choice\n"
              << "6.Back into initial Marking\n"
+             << "7.Convert to Transition System\n"
              << "Clear screen('clear')\n";
         cout <<"Your choice: " ; cin >> option;cout << endl;
         if(option == "1"){
