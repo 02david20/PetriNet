@@ -244,6 +244,9 @@ int main(){
         else if(option == "6") {
             PN->Reset(initial_token);
         }
+        else if(option == "7") {
+            PN->toTransitionSystem();
+        }
         else if(option.find("clear") != string::npos || option.find("Clear") != string::npos 
             || option.find("cls") != string::npos || option.find("CLEAR") != string::npos) {
             system("cls");

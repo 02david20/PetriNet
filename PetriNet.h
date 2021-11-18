@@ -109,6 +109,42 @@ private:
         }
     }
 };
+
+
+class TransitionSystem {
+private:
+    class Edge {
+    public:
+        string Marking;
+        string transition;
+        Edge(string Marking,string transition):Marking(Marking),transition(transition) {};
+    };
+public:
+    int V = 0;
+    map <string, vector<Edge> > TS;
+    TransitionSystem(): V(0) {};
+    void addVertex(string Marking) {
+        V++;
+        vector<Edge> e;
+        TS.insert(pair<string, vector<Edge> > (Marking,e));
+    }
+    void addEdge(string source, string destination, string transition) {
+        TS[source].push_back(Edge(destination,transition));
+    }
+    bool containEdge(string source, string destination, string transition) {
+         map <string, vector<Edge> >::iterator i;
+         for(i = TS.begin(); i != TS.end();++i) {
+             if(i->first == source) {
+                 vector<Edge>::iterator j;
+                 for(j = i->second.begin(); j != i->second.end();++j) {
+                     if(j->Marking == destination && j->transition == transition) return true;
+                 }
+             }
+         }
+         return false;
+    }
+};
+
 class PetriNet{
 public:
     // Set of place
@@ -156,7 +192,7 @@ private:
             }
         }
         trace.pop_back();
-        this->ps = trace.back();
+        if(!trace.empty())this->ps = trace.back();
         updateTransition();
     }
     string get_str_seq(vector<string>firing_seq){
@@ -167,6 +203,24 @@ private:
             s+=","+firing_seq[i];
         }
         return s;
+    }
+    string getMarking(vector<Place> p) {
+        string res = "";
+        int len = ps.size();
+        int i;
+        for(i=0;i<len;i++){
+            if(ps[i].token != 0) {
+                res += ps[i].name+"."+to_string(ps[i].token);
+                break;
+            }
+        }
+        
+        for(i=i+1;i<len;i++){
+            if(ps[i].token != 0) {
+                res += ","+ps[i].name+"."+to_string(ps[i].token);
+            }
+        }
+        return res;
     }
     void updateMarking(string transition){
         int len = ps.size();
@@ -398,6 +452,59 @@ public:
         }
         cout << "Back into inital Marking: ";
         printMarking(this->ps,OTHER);
+    }
+
+    void TSrec(TransitionSystem*& TS,vector< vector<Place> >& M, vector< vector<Place> >& trace,vector<string> firing_seq) {
+        M.push_back(ps);
+        trace.push_back(ps);
+        string curMarking = getMarking(ps);
+        for (map<string,Transition>::iterator i = mp.begin(); i != mp.end();++i)
+        {
+            if((*i).second.fire()) {
+                updateMarking((*i).first);
+                //Check if the Marking already exist
+                //If true then add Edge;
+                string firedMarking = getMarking(ps);
+                string transition = i->first;
+                bool valid = true;
+                for (auto marking : M)
+                {
+                    if(compareMarking(marking,this->ps)) {
+                        this->ps = M.back();
+                        updateTransition();
+                        valid = false;
+                        //Edge didn't exist
+                        if(!TS->containEdge(curMarking,firedMarking,transition)) {
+                            TS->addEdge(curMarking,firedMarking,transition);
+                        }
+                        break;
+                    }
+                }
+                //If not it is new Vertex create then add edge 
+                if(valid) {
+                    firing_seq.push_back((*i).first);
+                    TS->addVertex(firedMarking);
+                    if(!TS->containEdge(curMarking,firedMarking,transition)) {
+                            TS->addEdge(curMarking,firedMarking,transition);
+                    }
+
+                    TSrec(TS,M,trace,firing_seq);
+                    if(!firing_seq.empty())firing_seq.pop_back();
+                }
+            }
+        }
+        trace.pop_back();
+        if(!trace.empty())this->ps = trace.back();
+        updateTransition();
+    }
+
+    TransitionSystem* toTransitionSystem() {
+        TransitionSystem *TS = new TransitionSystem();
+        TS->addVertex(getMarking(ps));
+        vector< vector<Place> > M,trace;
+        vector<string> fq;
+        TSrec(TS,M,trace,fq);
+        return TS;
     }
 };
 
