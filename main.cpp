@@ -261,8 +261,10 @@ int main(){
             PN->Reset(initial_token);
         }
         else if(option == "7") {
-            TransitionSystem *TS = PN->toTransitionSystem();
-            TS->print();
+            bool check=false;
+            TransitionSystem *TS = PN->toTransitionSystem(check);
+            if(check) cout<<"The operation took too long to process. It is possible that this Petri Net has an infinite transition system."<<endl;
+            else TS->print();
             delete TS;
             PN->Reset(initial_token);
         }
