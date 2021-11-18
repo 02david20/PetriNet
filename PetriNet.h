@@ -187,8 +187,13 @@ private:
             }
         }
     }
-    void printReachableMarkingRec(vector< vector<Place> >& M, vector< vector<Place> >& trace,vector<string> firing_seq) {
+    void printReachableMarkingRec(vector< vector<Place> >& M, vector< vector<Place> >& trace,vector<string> firing_seq,time_t &startTime, bool& check) {
         HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
+        time_t curTime=GetCurrentTime();
+        if(curTime-startTime>5000){
+            check=true;
+            return;
+        } 
         M.push_back(ps);
         trace.push_back(ps);
         for (map<string,Transition>::iterator i = mp.begin(); i != mp.end();++i)
@@ -213,7 +218,7 @@ private:
                     cout << get_str_seq(firing_seq) << endl;
                     SetConsoleTextAttribute(h,15);                    
                     printMarking(this->ps,OTHER);
-                    printReachableMarkingRec(M,trace,firing_seq);
+                    printReachableMarkingRec(M,trace,firing_seq,startTime,check);
                     firing_seq.pop_back();
                 }
             }
@@ -271,7 +276,12 @@ private:
             }
         }
     } 
-    void TSrec(TransitionSystem*& TS,vector< vector<Place> >& M, vector< vector<Place> >& trace,vector<string> firing_seq) {
+    void TSrec(TransitionSystem*& TS,vector< vector<Place> >& M, vector< vector<Place> >& trace,vector<string> firing_seq,time_t &startTime,bool& check) {
+        time_t curTime=GetCurrentTime();
+        if(curTime-startTime>1000){
+            check=true;
+            return;
+        }
         M.push_back(ps);
         trace.push_back(ps);
         string curMarking = getMarking(ps);
@@ -302,10 +312,10 @@ private:
                     firing_seq.push_back((*i).first);
                     TS->addVertex(firedMarking);
                     if(!TS->containEdge(curMarking,firedMarking,transition)) {
-                            TS->addEdge(curMarking,firedMarking,transition);
+                        TS->addEdge(curMarking,firedMarking,transition);
                     }
 
-                    TSrec(TS,M,trace,firing_seq);
+                    TSrec(TS,M,trace,firing_seq,startTime,check);
                     if(!firing_seq.empty())firing_seq.pop_back();
                 }
             }
@@ -472,7 +482,12 @@ public:
         {
             save.push_back(*i);
         }
-        printReachableMarkingRec(M,trace,fs);
+        time_t startTime=GetCurrentTime();
+        bool check=false;
+        printReachableMarkingRec(M,trace,fs,startTime,check);
+        if(check){
+            cout<<"This operation took too long. The Petri Net probably has infinite reachable markings."<<endl;
+        }
         while(!ps.empty()) ps.pop_back();
         for (vector<Place>::iterator i = save.begin(); i != save.end(); ++i)
         {
@@ -535,12 +550,13 @@ public:
     }
 
    
-    TransitionSystem* toTransitionSystem() {
+    TransitionSystem* toTransitionSystem(bool& check) {
         TransitionSystem *TS = new TransitionSystem();
         TS->addVertex(getMarking(ps));
         vector< vector<Place> > M,trace;
         vector<string> fq;
-        TSrec(TS,M,trace,fq);
+        time_t startTime=GetCurrentTime();
+        TSrec(TS,M,trace,fq,startTime,check);
         return TS;
     }
 };
