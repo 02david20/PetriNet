@@ -243,10 +243,14 @@ int main(){
             }
         }
         else if(option == "6") {
+            cout << "Back into ini1tal Marking! " << endl; 
             PN->Reset(initial_token);
         }
         else if(option == "7") {
-            PN->toTransitionSystem();
+            TransitionSystem *TS = PN->toTransitionSystem();
+            TS->print();
+            delete TS;
+            PN->Reset(initial_token);
         }
         else if(option.find("clear") != string::npos || option.find("Clear") != string::npos 
             || option.find("cls") != string::npos || option.find("CLEAR") != string::npos) {
@@ -263,3 +267,4 @@ int main(){
     delete PN;
     return 0;
 }
+

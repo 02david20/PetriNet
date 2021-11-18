@@ -143,6 +143,30 @@ public:
          }
          return false;
     }
+    void print() {
+        HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
+        if(TS.empty()) {
+            SetConsoleTextAttribute(h,4);
+            cout << "Empty!" << endl;
+            SetConsoleTextAttribute(h,15);
+            return ;
+        }
+        map <string, vector<Edge> >::iterator i;
+        for(i = TS.begin(); i != TS.end();++i) {
+            SetConsoleTextAttribute(h,10);
+            cout << "[" <<i->first << "]" <<  endl;
+            vector<Edge>::iterator j;
+            for(j = i->second.begin(); j != i->second.end();++j) {
+                SetConsoleTextAttribute(h,15);
+                cout << "||" << endl;
+                cout <<  "==" << j->transition<<"==>";
+                SetConsoleTextAttribute(h,9);
+                cout << " ["<<j->Marking << "]"<<  endl;
+            }
+            cout << endl;
+        }
+        SetConsoleTextAttribute(h,15);
+    }
 };
 
 class PetriNet{
@@ -164,6 +188,7 @@ private:
         }
     }
     void printReachableMarkingRec(vector< vector<Place> >& M, vector< vector<Place> >& trace,vector<string> firing_seq) {
+        HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
         M.push_back(ps);
         trace.push_back(ps);
         for (map<string,Transition>::iterator i = mp.begin(); i != mp.end();++i)
@@ -184,7 +209,9 @@ private:
                 //If not print the Marking
                 if(valid) {
                     firing_seq.push_back((*i).first);
+                    SetConsoleTextAttribute(h,14);
                     cout << get_str_seq(firing_seq) << endl;
+                    SetConsoleTextAttribute(h,15);                    
                     printMarking(this->ps,OTHER);
                     printReachableMarkingRec(M,trace,firing_seq);
                     firing_seq.pop_back();
@@ -243,7 +270,51 @@ private:
                 }
             }
         }
+    } 
+    void TSrec(TransitionSystem*& TS,vector< vector<Place> >& M, vector< vector<Place> >& trace,vector<string> firing_seq) {
+        M.push_back(ps);
+        trace.push_back(ps);
+        string curMarking = getMarking(ps);
+        for (map<string,Transition>::iterator i = mp.begin(); i != mp.end();++i)
+        {
+            if((*i).second.fire()) {
+                updateMarking((*i).first);
+                //Check if the Marking already exist
+                //If true then add Edge;
+                string firedMarking = getMarking(ps);
+                string transition = i->first;
+                bool valid = true;
+                for (auto marking : M)
+                {
+                    if(compareMarking(marking,this->ps)) {
+                        this->ps = M.back();
+                        updateTransition();
+                        valid = false;
+                        //Edge didn't exist
+                        if(!TS->containEdge(curMarking,firedMarking,transition)) {
+                            TS->addEdge(curMarking,firedMarking,transition);
+                        }
+                        break;
+                    }
+                }
+                //If not it is new Vertex create then add edge 
+                if(valid) {
+                    firing_seq.push_back((*i).first);
+                    TS->addVertex(firedMarking);
+                    if(!TS->containEdge(curMarking,firedMarking,transition)) {
+                            TS->addEdge(curMarking,firedMarking,transition);
+                    }
+
+                    TSrec(TS,M,trace,firing_seq);
+                    if(!firing_seq.empty())firing_seq.pop_back();
+                }
+            }
+        }
+        trace.pop_back();
+        if(!trace.empty())this->ps = trace.back();
+        updateTransition();
     }
+
 public:
     PetriNet(vector<Place>p, map<string,Transition> m):mp(m),ps(p){};
     
@@ -450,54 +521,9 @@ public:
                 if(pOut!=(*it).second.out_arcs.end()) pOut->p=ps[j];
             }
         }
-        cout << "Back into inital Marking: ";
-        printMarking(this->ps,OTHER);
     }
 
-    void TSrec(TransitionSystem*& TS,vector< vector<Place> >& M, vector< vector<Place> >& trace,vector<string> firing_seq) {
-        M.push_back(ps);
-        trace.push_back(ps);
-        string curMarking = getMarking(ps);
-        for (map<string,Transition>::iterator i = mp.begin(); i != mp.end();++i)
-        {
-            if((*i).second.fire()) {
-                updateMarking((*i).first);
-                //Check if the Marking already exist
-                //If true then add Edge;
-                string firedMarking = getMarking(ps);
-                string transition = i->first;
-                bool valid = true;
-                for (auto marking : M)
-                {
-                    if(compareMarking(marking,this->ps)) {
-                        this->ps = M.back();
-                        updateTransition();
-                        valid = false;
-                        //Edge didn't exist
-                        if(!TS->containEdge(curMarking,firedMarking,transition)) {
-                            TS->addEdge(curMarking,firedMarking,transition);
-                        }
-                        break;
-                    }
-                }
-                //If not it is new Vertex create then add edge 
-                if(valid) {
-                    firing_seq.push_back((*i).first);
-                    TS->addVertex(firedMarking);
-                    if(!TS->containEdge(curMarking,firedMarking,transition)) {
-                            TS->addEdge(curMarking,firedMarking,transition);
-                    }
-
-                    TSrec(TS,M,trace,firing_seq);
-                    if(!firing_seq.empty())firing_seq.pop_back();
-                }
-            }
-        }
-        trace.pop_back();
-        if(!trace.empty())this->ps = trace.back();
-        updateTransition();
-    }
-
+   
     TransitionSystem* toTransitionSystem() {
         TransitionSystem *TS = new TransitionSystem();
         TS->addVertex(getMarking(ps));
