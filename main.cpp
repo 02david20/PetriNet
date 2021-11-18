@@ -189,7 +189,7 @@ int main(){
              << "2.Print all reachable Marking from current Marking\n"
              << "3.Print Place\n"
              << "4.Print Transition\n"
-             << "5.Firing each transition you choice\n"
+             << "5.Firing each transition you choose\n"
              << "6.Back into initial Marking\n"
              << "7.Convert to Transition System\n"
              << "Clear screen('clear')\n";
@@ -257,7 +257,7 @@ int main(){
             }
         }
         else if(option == "6") {
-            cout << "Back into ini1tal Marking! " << endl; 
+            cout << "Back into initial Marking! " << endl; 
             PN->Reset(initial_token);
         }
         else if(option == "7") {

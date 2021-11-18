@@ -438,7 +438,18 @@ public:
         int size = ps.size();
         for (int i = 0; i < size;i++)
         {
-            cout << ps[i].name << ": "; cin >> ps[i].token;
+            cout << ps[i].name << ": ";
+            string input;
+            cin >> input;
+            while (cin.fail() || cin.eof() || input.find_first_not_of("0123456789") != std::string::npos) {
+                cout << "Incorrect input. Please try again." << endl;
+                if (input.find_first_not_of("0123456789") == std::string::npos || input[0] == '-') {
+                    std::cin.clear();
+                    std::cin.ignore(256,'\n');
+                }
+                cin >> input;
+            }
+            ps[i].token = stoi(input, nullptr);
         }
          for (std::map<string,Transition>::iterator it=mp.begin(); it!=mp.end(); ++it){
             for(int j=0;j<size;j++){
