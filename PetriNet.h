@@ -276,7 +276,7 @@ private:
             }
         }
     } 
-    void TSrec(TransitionSystem*& TS,vector< vector<Place> >& M, vector< vector<Place> >& trace,vector<string> firing_seq,time_t &startTime,bool& check) {
+    void TSrec(TransitionSystem*& TS,vector< vector<Place> >& M, vector< vector<Place> >& trace,vector<string> firing_seq,time_t &startTime,bool& check, int &limit) {
         time_t curTime=GetCurrentTime();
         if(curTime-startTime>1000){
             check=true;
@@ -291,6 +291,13 @@ private:
                 updateMarking((*i).first);
                 //Check if the Marking already exist
                 //If true then add Edge;
+                bool flag = true;
+                if (limit > 0) {
+                    for (int i = 0; i < ps.size(); i++) {
+                        if (ps[i].token > limit) flag = false;
+                    }
+                }
+                if (!flag) continue;
                 string firedMarking = getMarking(ps);
                 string transition = i->first;
                 bool valid = true;
@@ -315,7 +322,7 @@ private:
                         TS->addEdge(curMarking,firedMarking,transition);
                     }
 
-                    TSrec(TS,M,trace,firing_seq,startTime,check);
+                    TSrec(TS,M,trace,firing_seq,startTime,check,limit);
                     if(!firing_seq.empty())firing_seq.pop_back();
                 }
             }
@@ -550,13 +557,13 @@ public:
     }
 
    
-    TransitionSystem* toTransitionSystem(bool& check) {
+    TransitionSystem* toTransitionSystem(bool& check, int& limit) {
         TransitionSystem *TS = new TransitionSystem();
         TS->addVertex(getMarking(ps));
         vector< vector<Place> > M,trace;
         vector<string> fq;
         time_t startTime=GetCurrentTime();
-        TSrec(TS,M,trace,fq,startTime,check);
+        TSrec(TS,M,trace,fq,startTime,check,limit);
         return TS;
     }
 };
