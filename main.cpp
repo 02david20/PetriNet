@@ -261,8 +261,11 @@ int main(){
             PN->Reset(initial_token);
         }
         else if(option == "7") {
+            int limit;
+            cout << "Do you want to set a limit on the number of tokens at each states ?" << endl
+                 << "If yes, please enter the number you want, otherwise just enter 0: "; cin >> limit;
             bool check=false;
-            TransitionSystem *TS = PN->toTransitionSystem(check);
+            TransitionSystem *TS = PN->toTransitionSystem(check, limit);
             if(check) cout<<"The operation took too long to process. It is possible that this Petri Net has an infinite transition system."<<endl;
             else TS->print();
             delete TS;
