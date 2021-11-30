@@ -30,10 +30,9 @@ Here is the Input Form:
 6. The program reinitializes the Petri Net in accordance to its original initial marking.
 7. The user must first set a limit on the number of tokens in a place, then the programs will proceed to create a transition system based on the input. If the operation time of the function does not exceed a certain limit then a transition system will be printed in the form of an adjacency list.
 8. If the option is “clear“ or “cls” or “Clear” or “CLEAR”, the program clears the screen.
-9. 
-Otherwise, their will be Invalid Choice and the program will asked you to enter again.
+Otherwise, the input will be considered Invalid Choice and the program will asked you to enter again.
 
-After that, You will be asked to be continued or not. 
+After that, you will be asked to be continued or not. 
 
 # Petri Net Visualizing 
 ## Motivation
