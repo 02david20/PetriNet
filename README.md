@@ -10,7 +10,8 @@ At first sight, you will see 4 option:
 3. Merge
 4. Optional
     - With option 1,2 and 3 the Petri Net is constructed similar to that the assignment demanded.
-    - The option 4 is for constructing a custom Petri Net,
+    - The option 4 is for constructing a custom Petri Net.
+
 The input file is '.txt' and has to be stored in the same directory with main.exe
 Here the Input Form:
 
