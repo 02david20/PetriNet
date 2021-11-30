@@ -26,9 +26,9 @@ Here is the Input Form:
 2. The program prints the set of reachable markings from the current marking.
 3. The program prints the current state of all Place nodes.
 4. The program prints the current state of all Transition nodes.
-5. The program prints the current Place nodes and Transition nodes. Thenthe user enters which input to fire. The program then prints the state of the Place and Transitionnodes after the firing.
-6. The program reinitializes the Petri Net to the initial marking.
-7. Then the user must first set a limit on the number of tokens in a place,then the programs will proceed to create a transition system based on the input. If the operationtime of the function does not exceed a certain limit then a transition system will be printed inthe form of an adjacency list
+5. The program prints the current Place nodes and Transition nodes. Then the user enters which transition to fire. The program then prints the state of the Place and Transition nodes after the firing.
+6. The program reinitializes the Petri Net in accordance to its original initial marking.
+7. The user must first set a limit on the number of tokens in a place, then the programs will proceed to create a transition system based on the input. If the operation time of the function does not exceed a certain limit then a transition system will be printed in the form of an adjacency list.
 8. If the option is “clear“ or “cls” or “Clear” or “CLEAR”, the program clears the screen.
 9. 
 Otherwise, their will be Invalid Choice and the program will asked you to enter again.
