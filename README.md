@@ -4,13 +4,13 @@ This is a calculation package write in C++ for answering problem in Math Modelin
 The source Code contain files "main.cpp" "PetriNet.h", you can build with compiler or just run the main.exe
 ## Manual
 ![First View](images/Annotation%202021-11-25%20160005.png)
-At your first sight, you will see 4 option:
+At first sight, you will see 4 option:
 1. Patient
 2. Specialist
 3. Merge
 4. Optional
-    - With option 1,2 and 3 the Petri Net is constructed similar to the assignment demand
-    - The option 4 is in order to make the user can construct the Petri Net as their need,
+    - With option 1,2 and 3 the Petri Net is constructed similar to that the assignment demanded.
+    - The option 4 is for constructing a custom Petri Net,
 The input file is '.txt' and has to be stored in the same directory with main.exe
 Here the Input Form:
 
