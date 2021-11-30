@@ -15,14 +15,14 @@ At first sight, you will see 4 option:
 Here is the Input Form:
 
 ![Input form](images/Annotation%202021-11-25%20161308.png)
-- After Choosing Option you will be asked to enter the Initial Marking.
+- After Choosing an Option you will be asked to enter the Initial Marking.
 
 **Note that:** The input must be numberic and non-negative
 
-- The Petri Net will be initialize and go on we will have some feature
+- The Petri Net will be initialize and from there we will have some features
 
 ![Input form](images/Annotation%202021-11-25%20162241.png)
-1. The program prints the state of the current Place nodes and Transitionnodes. Then, it will fire the Transition nodes based on the input and print the state of Place andTransition in succession. Regarding the input, each transition should be separated by whitespaceand a period to signify the end of the input. Example: With the Patient’s Petri Net the inputshould be “start start change .” (whitespace before the period at the end is necessary) In case thetransition names entered are not in the Petri Net, the program will ignore those transitions andrun the remaining ones. Example: As the input “start abc start def change .” is entered, transition“abc” and “def” are ignored as they are not initialized yet. Therefore, the firing sequence is now“start start change .”
+1. The program prints the state of the current Place nodes and Transition nodes. Then, it will fire the Transition nodes based on the input and print the state of Place and Transition in succession. Regarding the input, each transition should be separated by whitespace and a period to signify the end of the input. Example: With the Patient’s Petri Net the inputshould be “start start change .” (whitespace before the period at the end is necessary) In case the transition names entered are not in the Petri Net, the program will ignore those transitions and run the remaining ones. Example: As the input “start abc start def change .” is entered, transition “abc” and “def” are ignored as they are not initialized yet. Therefore, the firing sequence is now “start start change .”
 2. The program prints the set of reachable markings from the current marking.
 3. The program prints the current state of all Place nodes.
 4. The program prints the current state of all Transition nodes.
